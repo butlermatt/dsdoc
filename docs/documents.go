@@ -52,9 +52,6 @@ func TrimPrefix(s []string) ([]string, error) {
 			return nil, fmt.Errorf("Invalid DsDoc. Cannot contain a line without a DsDoc comment")
 		}
 		tmp := strings.TrimSpace(strings.Trim(str, Prefix))
-		if tmp == "" {
-			continue
-		}
 		r = append(r, tmp)
 	}
 
