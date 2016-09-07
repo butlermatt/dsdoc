@@ -1,6 +1,9 @@
 package parser
 
-import "unicode/utf8"
+import (
+	"bytes"
+	"unicode/utf8"
+)
 
 const (
 	eof = rune(0)
@@ -8,7 +11,7 @@ const (
 )
 
 // AttrChar is the character which denotes a DsDoc Attribute
-const AttrChar = "@"
+const AttrChar = '@'
 
 // Scanner represents a lexical scanner.
 type Scanner struct {
@@ -44,6 +47,88 @@ func (s *Scanner) unread() {
 	} else {
 		s.pos -= s.width
 	}
+}
+
+// Scan returns the next token and the literal value.
+func (s *Scanner) Scan() (tok ItemToken, lit string) {
+	r := s.read()
+
+	if isWs(r) {
+		s.unread()
+		return s.scanWhitespace()
+	} else if isAlphaNum(r) {
+		s.unread()
+		return s.scanIdent()
+	}
+
+	switch r {
+	case eof:
+		return EOF, ""
+	case eol:
+		return EOL, ""
+	case AttrChar:
+		return Attr, string(r)
+	}
+	return Illegal, string(r)
+}
+
+// scanWhitespace consumes all contiguous whitespace.
+func (s *Scanner) scanWhitespace() (tok ItemToken, lit string) {
+	var buf bytes.Buffer
+	buf.WriteRune(s.read())
+
+	for {
+		if r := s.read(); r == eof || r == eol {
+			break
+		} else if !isWs(r) {
+			s.unread()
+			break
+		} else {
+			buf.WriteRune(r)
+		}
+	}
+
+	return WS, buf.String()
+}
+
+// scanIdent consumes all contiguous ident runes.
+func (s *Scanner) scanIdent() (tok ItemToken, lit string) {
+	var buf bytes.Buffer
+	buf.WriteRune(s.read())
+
+	for {
+		if r := s.read(); r == eof || r == eol {
+			break
+		} else if !isAlphaNum(r) || r != '_' {
+			s.unread()
+			break
+		} else {
+			buf.WriteRune(r)
+		}
+	}
+
+	switch buf.String() {
+	case "Command":
+		return Command, buf.String()
+	case "Node":
+		return Node, buf.String()
+	case "MetaType":
+		return MetaType, buf.String()
+	case "Is":
+		return Is, buf.String()
+	case "Parent":
+		return Parent, buf.String()
+	case "Param":
+		return Param, buf.String()
+	case "Return":
+		return Return, buf.String()
+	case "Column":
+		return Column, buf.String()
+	case "Value":
+		return Value, buf.String()
+	}
+
+	return Ident, buf.String()
 }
 
 // NewScanner returns a new instance of Scanner.
