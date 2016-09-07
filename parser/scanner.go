@@ -24,6 +24,9 @@ type Scanner struct {
 
 // read will return the next rune in the input.
 func (s *Scanner) read() rune {
+	if s.line >= len(s.in) {
+		return eof
+	}
 	if s.pos >= len(s.in[s.line]) {
 		s.line++
 		s.pos = 0
@@ -75,14 +78,22 @@ func (s *Scanner) Scan() (ItemToken, string) {
 // ScanText returns a Text token and consumes all text until two sequential eol runes are reached.
 func (s *Scanner) ScanText() (ItemToken, string) {
 	var buf bytes.Buffer
-	buf.WriteRune(s.read())
+
+	// Trim leading whitespace
+	r := s.read();
+	for ; isWs(r); r = s.read() {
+	}
+
+	buf.WriteRune(r)
 
 	for {
 		if r := s.read(); r == eof {
+			s.unread()
 			break
 		} else if r == eol {
 			n := s.peak()
 			if n == eof || n == eol || n == AttrChar {
+				s.unread()
 				break
 			}
 			buf.WriteRune(' ') //
@@ -101,6 +112,7 @@ func (s *Scanner) scanWhitespace() (ItemToken, string) {
 
 	for {
 		if r := s.read(); r == eof || r == eol {
+			s.unread()
 			break
 		} else if !isWs(r) {
 			s.unread()
@@ -120,6 +132,7 @@ func (s *Scanner) scanIdent() (ItemToken, string) {
 
 	for {
 		if r := s.read(); r == eof || r == eol {
+			s.unread()
 			break
 		} else if !isAlphaNum(r) && r != '_' {
 			s.unread()
@@ -134,6 +147,8 @@ func (s *Scanner) scanIdent() (ItemToken, string) {
 		return Command, buf.String()
 	case "Node":
 		return Node, buf.String()
+	case "Link":
+		return Link, buf.String()
 	case "MetaType":
 		return MetaType, buf.String()
 	case "Is":

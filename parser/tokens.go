@@ -1,5 +1,7 @@
 package parser
 
+import "fmt"
+
 // ItemToken represents a lexical token.
 type ItemToken int
 
@@ -22,6 +24,8 @@ const (
 	Command
 	// Node is a DsDoc attribute keyword.
 	Node
+	// Link is a DsDoc attribute keyword.
+	Link
 	// MetaType is a DsDoc attribute keyword.
 	MetaType
 	// Is is a DsDoc attribute keyword.
@@ -37,3 +41,24 @@ const (
 	// Value is a DsDoc attribute keyword.
 	Value
 )
+
+func (i ItemToken) String() string {
+	t := "UNKNOWN"
+	switch i {
+	case Illegal:
+		t = "Illegal"
+	case EOF:
+		t = "EOF"
+	case EOL:
+		t = "EOL"
+	case WS:
+		t = "Whitespace"
+	case Ident:
+		t = "Ident"
+	case Text:
+		t = "Text"
+	case Attr:
+		t = string(AttrChar)
+	}
+	return fmt.Sprintf("Token(%v)", t)
+}

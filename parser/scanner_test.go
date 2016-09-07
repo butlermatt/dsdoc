@@ -46,8 +46,12 @@ func TestScanner_ScanText(t *testing.T) {
 	}{
 		{s: []string{`Sample String`}, tok: Text, lit: "Sample String"},
 		{s: []string{`Sample`, `String`}, tok: Text, lit: "Sample String"},
+		{s: []string{`Sample`, `String`, `Example`}, tok: Text, lit: "Sample String Example"},
 		{s: []string{`Sample`, ``, `String`}, tok: Text, lit: "Sample" },
 		{s: []string{`Sample`, `@String`}, tok: Text, lit: "Sample"},
+		{s: []string{" \tSample String"}, tok: Text, lit: "Sample String"},
+
+
 	}
 
 	for i, tt := range tests {
