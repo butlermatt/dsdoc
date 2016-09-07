@@ -1,8 +1,8 @@
 package trim
 
 import (
-	"strings"
 	"errors"
+	"strings"
 )
 
 // Prefix is the DsDoc comment style.
