@@ -41,14 +41,14 @@ func TestTrimPrefix2(t *testing.T) {
 
 // Ensure empty lines are preserved.
 func TestTrimPrefix3(t *testing.T) {
-	sample := []string {
+	sample := []string{
 		`//* line one`,
 		`//*         `,
 		`//* line three`,
 		`//*`,
 	}
 
-	expect := []string {
+	expect := []string{
 		`line one`,
 		``,
 		`line three`,

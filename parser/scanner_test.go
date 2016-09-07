@@ -5,8 +5,8 @@ import (
 )
 
 func TestScanner_Scan(t *testing.T) {
-	var tests = []struct{
-		s []string
+	var tests = []struct {
+		s   []string
 		tok ItemToken
 		lit string
 	}{
@@ -39,19 +39,17 @@ func TestScanner_Scan(t *testing.T) {
 }
 
 func TestScanner_ScanText(t *testing.T) {
-	var tests = []struct{
-		s []string
+	var tests = []struct {
+		s   []string
 		tok ItemToken
 		lit string
 	}{
 		{s: []string{`Sample String`}, tok: Text, lit: "Sample String"},
 		{s: []string{`Sample`, `String`}, tok: Text, lit: "Sample String"},
 		{s: []string{`Sample`, `String`, `Example`}, tok: Text, lit: "Sample String Example"},
-		{s: []string{`Sample`, ``, `String`}, tok: Text, lit: "Sample" },
+		{s: []string{`Sample`, ``, `String`}, tok: Text, lit: "Sample"},
 		{s: []string{`Sample`, `@String`}, tok: Text, lit: "Sample"},
 		{s: []string{" \tSample String"}, tok: Text, lit: "Sample String"},
-
-
 	}
 
 	for i, tt := range tests {

@@ -131,13 +131,13 @@ func TestParser_Parse(t *testing.T) {
 			for j, p := range tt.doc.Params {
 				tp := d.Params[j]
 				if p.Type != tp.Type {
-					t.Errorf("%d. Param %j. Param type mismatch: exp=%q got=%q", i, j, p.Type, tp.Type)
+					t.Errorf("%d. Param %d. Param type mismatch: exp=%q got=%q", i, j, p.Type, tp.Type)
 				}
 				if p.Name != tp.Name {
-					t.Errorf("%d. Param %j. Param name mismatch: exp=%q got=%q", i, j, p.Name, tp.Name)
+					t.Errorf("%d. Param %d. Param name mismatch: exp=%q got=%q", i, j, p.Name, tp.Name)
 				}
 				if p.Description != tp.Description {
-					t.Errorf("%d. Param %j. Param description mismatch:\n  exp=%q\n  got=%q", i, j, p.Description, tp.Description)
+					t.Errorf("%d. Param %d. Param description mismatch:\n  exp=%q\n  got=%q", i, j, p.Description, tp.Description)
 				}
 			}
 		} else if len(d.Params) != 0 {
@@ -155,13 +155,13 @@ func TestParser_Parse(t *testing.T) {
 			for j, p := range tt.doc.Columns {
 				tp := d.Columns[i]
 				if p.Type != tp.Type {
-					t.Errorf("%d. Column %j. Column type mismatch: exp=%q got=%q", i, j, p.Type, tp.Type)
+					t.Errorf("%d. Column %d. Column type mismatch: exp=%q got=%q", i, j, p.Type, tp.Type)
 				}
 				if p.Name != tp.Name {
-					t.Errorf("%d. Column %j. Column name mismatch: exp=%q got=%q", i, j, p.Name, tp.Name)
+					t.Errorf("%d. Column %d. Column name mismatch: exp=%q got=%q", i, j, p.Name, tp.Name)
 				}
 				if p.Description != tp.Description {
-					t.Errorf("%d. Column %j. Column description mismatch:\n  exp=%q\n  got=%q", i, j, p.Description, tp.Description)
+					t.Errorf("%d. Column %d. Column description mismatch:\n  exp=%q\n  got=%q", i, j, p.Description, tp.Description)
 				}
 			}
 		} else if len(d.Columns) != 0 {

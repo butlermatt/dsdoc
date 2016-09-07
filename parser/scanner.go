@@ -80,7 +80,7 @@ func (s *Scanner) ScanText() (ItemToken, string) {
 	var buf bytes.Buffer
 
 	// Trim leading whitespace
-	r := s.read();
+	r := s.read()
 	for ; isWs(r); r = s.read() {
 	}
 

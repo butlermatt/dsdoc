@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"fmt"
 	"errors"
+	"fmt"
 )
 
 // DocType represents the type of document being parsed.
