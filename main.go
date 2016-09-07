@@ -5,7 +5,7 @@ import "fmt"
 import "github.com/butlermatt/dsdoc/docs"
 
 func main() {
-	fmt.Println(docs.LinkDoc)
-	fmt.Println(docs.NodeDoc)
-	fmt.Println(docs.ActionDoc)
+	fmt.Println(trim.LinkDoc)
+	fmt.Println(trim.NodeDoc)
+	fmt.Println(trim.ActionDoc)
 }
