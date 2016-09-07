@@ -17,8 +17,6 @@ const (
 	// Text indicates a text string such as in short/long description
 	Text
 	// ValType indicates what the Value's type is.
-	ValType
-	// Attr indicates an attribute character token
 	Attr // @
 	// Command is a DsDoc attribute keyword.
 	Command

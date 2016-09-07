@@ -50,7 +50,7 @@ func (s *Scanner) unread() {
 }
 
 // Scan returns the next token and the literal value.
-func (s *Scanner) Scan() (tok ItemToken, lit string) {
+func (s *Scanner) Scan() (ItemToken, string) {
 	r := s.read()
 
 	if isWs(r) {
@@ -72,8 +72,30 @@ func (s *Scanner) Scan() (tok ItemToken, lit string) {
 	return Illegal, string(r)
 }
 
+// ScanText returns a Text token and consumes all text until two sequential eol runes are reached.
+func (s *Scanner) ScanText() (ItemToken, string) {
+	var buf bytes.Buffer
+	buf.WriteRune(s.read())
+
+	for {
+		if r := s.read(); r == eof {
+			break
+		} else if r == eol {
+			n := s.peak()
+			if n == eof || n == eol || n == AttrChar {
+				break
+			}
+			buf.WriteRune(' ') //
+		} else {
+			buf.WriteRune(r)
+		}
+	}
+
+	return Text, buf.String()
+}
+
 // scanWhitespace consumes all contiguous whitespace.
-func (s *Scanner) scanWhitespace() (tok ItemToken, lit string) {
+func (s *Scanner) scanWhitespace() (ItemToken, string) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
@@ -92,14 +114,14 @@ func (s *Scanner) scanWhitespace() (tok ItemToken, lit string) {
 }
 
 // scanIdent consumes all contiguous ident runes.
-func (s *Scanner) scanIdent() (tok ItemToken, lit string) {
+func (s *Scanner) scanIdent() (ItemToken, string) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
 	for {
 		if r := s.read(); r == eof || r == eol {
 			break
-		} else if !isAlphaNum(r) || r != '_' {
+		} else if !isAlphaNum(r) && r != '_' {
 			s.unread()
 			break
 		} else {
@@ -129,6 +151,13 @@ func (s *Scanner) scanIdent() (tok ItemToken, lit string) {
 	}
 
 	return Ident, buf.String()
+}
+
+// peak returns, but does not consume, the next rune.
+func (s *Scanner) peak() rune {
+	r := s.read()
+	s.unread()
+	return r
 }
 
 // NewScanner returns a new instance of Scanner.
