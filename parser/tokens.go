@@ -1,31 +1,41 @@
 package parser
 
-// Token represents a lexical token.
+// ItemToken represents a lexical token.
 type ItemToken int
 
 const (
-	// Special Tokens
+	// Illegal indicates an illegal syntax
 	Illegal ItemToken = iota
-	Eof
-	Eol
-	Ws
-
-	// Literals
-	Ident // fields, Table_name
-	Text // short/long descriptions.
-	ValType // ValueType (number, boolean, value, table, stream, etc)
-
-	// Misc Characters
+	// EOF indicates end of input
+	EOF
+	// EOL indicates end of line token
+	EOL
+	// WS indicates a whitespace token
+	WS
+	// Ident indicates an identifier token, such as fields, Path_name
+	Ident
+	// Text indicates a text string such as in short/long description
+	Text
+	// ValType indicates what the Value's type is.
+	ValType
+	// Attr indicates an attribute character token
 	Attr // @
-
-	// KEYWORDS
+	// Command is a DsDoc attribute keyword.
 	Command
+	// Node is a DsDoc attribute keyword.
 	Node
+	// MetaType is a DsDoc attribute keyword.
 	MetaType
+	// Is is a DsDoc attribute keyword.
 	Is
+	// Parent is a DsDoc attribute keyword.
 	Parent
+	// Param is a DsDoc attribute keyword.
 	Param
+	// Return is a DsDoc attribute keyword.
 	Return
+	// Column is a DsDoc attribute keyword.
 	Column
+	// Value is a DsDoc attribute keyword.
 	Value
 )

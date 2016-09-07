@@ -7,6 +7,7 @@ const (
 	eol = rune(3)
 )
 
+// AttrChar is the character which denotes a DsDoc Attribute
 const AttrChar = "@"
 
 // Scanner represents a lexical scanner.
@@ -21,7 +22,7 @@ type Scanner struct {
 // read will return the next rune in the input.
 func (s *Scanner) read() rune {
 	if s.pos >= len(s.in[s.line]) {
-		s.line += 1
+		s.line++
 		s.pos = 0
 		s.width = 0
 		if s.line >= len(s.in) {
@@ -33,6 +34,16 @@ func (s *Scanner) read() rune {
 	r, s.width = utf8.DecodeRuneInString(s.in[s.line][s.pos:])
 	s.pos += s.width
 	return r
+}
+
+// unread places the previous rune back in the reader.
+func (s *Scanner) unread() {
+	if s.pos == 0 {
+		s.line--
+		s.pos = len(s.in[s.line])
+	} else {
+		s.pos -= s.width
+	}
 }
 
 // NewScanner returns a new instance of Scanner.
