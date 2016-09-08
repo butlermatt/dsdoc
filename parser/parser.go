@@ -244,6 +244,9 @@ func (p *Parser) scanMetaType(d *Document) error {
 	if tok != Ident {
 		return fmt.Errorf("Expected Ident, found %q (%q)", lit, tok)
 	}
+	if d.Name != "" {
+		return fmt.Errorf("Cannot define a name %q MetaType %q", d.Name, lit)
+	}
 	d.Name = lit
 	return nil
 }
