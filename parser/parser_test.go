@@ -96,7 +96,17 @@ func TestParser_Parse(t *testing.T) {
 	}
 
 	for i, tt := range tests {
-		d, err := NewParser(tt.s).Parse()
+		parser := NewParser()
+		err := parser.Parse(tt.s)
+		if err != nil {
+			t.Errorf("%d. Unexpected error %q", i, err)
+		}
+		doc, err := parser.Build()
+		if err != nil {
+			t.Errorf("%d. Unexpected error %q", i, err)
+		}
+		d := doc.Children[0]
+
 		var es string
 		if err == nil {
 			es = ""

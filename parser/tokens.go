@@ -18,7 +18,7 @@ const (
 	Ident
 	// Text indicates a text string such as in short/long description
 	Text
-	// ValType indicates what the Value's type is.
+	// Attr indicates an DsDoc Attribute character
 	Attr // @
 	// Command is a DsDoc attribute keyword.
 	Command

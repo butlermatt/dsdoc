@@ -56,6 +56,8 @@ type Parameter struct {
 // Parser represents a parser, which extends the functionality of Scanner
 type Parser struct {
 	s   *Scanner
+	c   map[string]*Document
+	r   *Document
 	buf struct {
 		tok ItemToken
 		lit string
@@ -64,16 +66,27 @@ type Parser struct {
 }
 
 // NewParser returns a new instance of Parser
-func NewParser(in []string) *Parser {
-	return &Parser{s: NewScanner(in)}
+func NewParser() *Parser {
+	root := &Document{
+		Type:  NodeDoc,
+		Name:  "root",
+		Short: "Root node of the DsLink",
+	}
+	return &Parser{
+		c: map[string]*Document{root.Name: root},
+		r: root,
+	}
 }
 
-func (p *Parser) Parse() (*Document, error) {
+// Parse will take the input string slice and try to parse the information.
+func (p *Parser) Parse(in []string) error {
+	p.s = NewScanner(in)
+	p.buf.b = false
 	doc := &Document{}
 
 	// First token should be an Attribute character.
 	if tok, lit := p.scan(); tok != Attr {
-		return nil, fmt.Errorf("found %q, expected %q", lit, AttrChar)
+		return fmt.Errorf("found %q, expected %q", lit, AttrChar)
 	}
 
 	// Expect DsDoc to start with either @Command, @Node or @Link
@@ -86,15 +99,15 @@ func (p *Parser) Parse() (*Document, error) {
 	case Link:
 		doc.Type = LinkDoc
 	default:
-		return nil, fmt.Errorf("Expect DocType, found %q", lit)
+		return fmt.Errorf("Expect DocType, found %q", lit)
 	}
 
-	if tok, lit := p.scanIgnoreWs(); tok == Ident {
+	if tok, lit = p.scanIgnoreWs(); tok == Ident {
 		doc.Name = lit
 	} else if tok == EOF {
-		return nil, errors.New("DsDoc unexpectedly terminated early.")
+		return errors.New("DsDoc unexpectedly terminated early.")
 	} else if tok != EOL {
-		return nil, fmt.Errorf("Expected ident string or EOL, found %q", lit)
+		return fmt.Errorf("Expected ident string or EOL, found %q", lit)
 	}
 
 	for {
@@ -137,12 +150,50 @@ func (p *Parser) Parse() (*Document, error) {
 			}
 
 			if err != nil {
-				return nil, err
+				return err
 			}
 		}
 	}
 
-	return doc, nil
+	// TODO: Verify required values are set
+	if doc.Name == "" {
+		return errors.New("DsDoc missing required Name or MetaType field")
+	}
+	ed := p.c[doc.Name]
+	if ed != nil {
+		return fmt.Errorf("DsDoc with name %q already exists", doc.Name)
+	}
+
+	if doc.ParentName == "" {
+		return errors.New("DsDoc missing required Parent field")
+	}
+
+	pd := p.c[doc.ParentName]
+	if pd != nil {
+		doc.Parent = pd
+		pd.Children = append(pd.Children, doc)
+	}
+
+	p.c[doc.Name] = doc
+	return nil
+}
+
+// Build completes the final linking of documents and returns the root document.
+func (p *Parser) Build() (*Document, error) {
+	for key, doc := range p.c {
+		if key == "root" {
+			continue
+		}
+		if doc.Parent == nil {
+			pd, ok := p.c[doc.ParentName]
+			if !ok {
+				return nil, fmt.Errorf("Unable to locate Parent named %q referenced by %q", doc.ParentName, key)
+			}
+			doc.Parent = pd
+			pd.Children = append(pd.Children, doc)
+		}
+	}
+	return p.r, nil
 }
 
 func (p *Parser) scan() (ItemToken, string) {
