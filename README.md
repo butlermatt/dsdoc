@@ -79,7 +79,8 @@ any order you choose, however they must all start on their own line.
 The `pathName` is optional and may be omitted. If a node has a fixed name
 it should be included. A node cannot be invoked by a user of the link. 
 It may or may not contain a value which in turn may or may not be writable. 
-They may also make up part of the hierarchy of a link.
+They may also make up part of the hierarchy of a link.  
+`pathName` may not contain spaces.
 
 ### `@Action [pathName]`
 
@@ -87,8 +88,8 @@ The `pathName` is optional and may be omitted. However it is very rare that
 an Action has a dynamic name, and usually have a fixed name which should be
 included. An action is a node which may be invoked by a user of the link, often
 times with various parameters, and may or may not have a return value of varying
-types.
-
+types.  
+`pathName` may not contain spaces.
 
 ### `@MetaType [type]`
 
@@ -96,10 +97,36 @@ If a Node or Action does not have a fixed name, such as may be the case if a
 node receives a name from either user input or via an external API call, then
 the DsDoc must include an `@MetaType` annotation which represents an internal
 type for the link. The `type` argument is required in this case.  
-It is an error to define both a name and MetaType.
+It is an error to define both a name and MetaType.  
+`type` cannot contain spaces.
 
 ### `@Is [isType]`
 
 This attribute is optional but recommended. If a Node or Action implements a 
 specific `$is` attribute, as are used with Profiles, specify the case-sensitive 
-`$is` name here.
+`$is` name here.  
+`isType` cannot contain spaces.
+
+### `@Parent [parentName]`
+
+This attribute is required by all DsDocs (both Node and Action types). The value
+should be the name or `MetaType` of the parent of this node or action. If the
+node or action is on the root of the link, then you should use the special 
+value `root`. 
+
+### `Short Description`
+
+A Short description is required for all nodes and actions. It does not start with
+an annotation, rather it is denoted by being preceded and followed by an empty
+line.
+
+### `Long Description`
+
+A long description is optional, but follows the same conventions as 
+Short Description by being preceded and followed by an empty line. This description
+may span multiple lines, but not multiple paragraphs. It should provide detailed
+information about the purpose of node or action.
+
+### `@Param [name] [type] [Description]`
+
+
