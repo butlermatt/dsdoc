@@ -21,6 +21,9 @@ var ValidFiles = [...]string{
 	".dart",
 	".java",
 	".go",
+	".c",
+	".cpp",
+	".cc",
 }
 
 var psr *parser.Parser
