@@ -70,10 +70,9 @@ func TestTrimPrefix3(t *testing.T) {
 
 // Ensure that comments can be at the end of text/source.
 func TestTrimDsDoc(t *testing.T) {
-	var tests = []struct{
+	var tests = []struct {
 		in  []string
-		out []string
-		ind int
+		out [][]string
 	}{
 		{
 			in: []string{
@@ -82,13 +81,14 @@ func TestTrimDsDoc(t *testing.T) {
 				`some text //* `,
 				`some text //* line four`,
 			},
-			out: []string{
-				`//* line one`,
-				`//* line two`,
-				`//* `,
-				`//* line four`,
+			out: [][]string{
+				{
+					`//* line one`,
+					`//* line two`,
+					`//* `,
+					`//* line four`,
+				},
 			},
-			ind: 3,
 		},
 		{
 			in: []string{
@@ -97,11 +97,15 @@ func TestTrimDsDoc(t *testing.T) {
 				`some text`,
 				`some text //* line four`,
 			},
-			out: []string{
-				`//* line one`,
-				`//* line two`,
+			out: [][]string{
+				{
+					`//* line one`,
+					`//* line two`,
+				},
+				{
+					`//* line four`,
+				},
 			},
-			ind: 2,
 		},
 		{
 			in: []string{
@@ -111,28 +115,39 @@ func TestTrimDsDoc(t *testing.T) {
 				"some text //* line one",
 				"some text //* line two",
 			},
-			out: []string{
-				"//* line one",
-				"//* line two",
+			out: [][]string{
+				{
+					"//* line one",
+					"//* line two",
+				},
 			},
-			ind: 4,
+		},
+		{
+			in: []string{
+				"some text",
+				"some text",
+				"some text",
+				"some text",
+			},
+			out: [][]string{},
 		},
 	}
 
 	for i, tt := range tests {
-		res, ind := TrimDsDoc(tt.in)
-
-		if tt.ind != ind {
-			t.Errorf("%d. Return index does not match: exp=%d got=%d", i, tt.ind, ind)
-		}
+		res := TrimDsDoc(tt.in)
 
 		if len(res) != len(tt.out) {
-			t.Errorf("%d. Line counts do not match: exp=%d got=%d", i, len(tt.out), len(res))
+			t.Fatalf("%d. Batch counts do not match: exp=%d got=%d", i, len(tt.out), len(res))
 		}
 
-		for j, str := range tt.out {
-			if str != res[j] {
-				t.Errorf("%d. %q does not match %q", i, str, res[j])
+		for j, bt := range tt.out {
+			if len(bt) != len(res[j]) {
+				t.Errorf("%d. %d. Line counts do not match: exp=%d got=%d", i, j, len(bt), len(res[j]))
+			}
+			for k, str := range bt {
+				if str != res[j][k] {
+					t.Errorf("%d. %q does not match %q", i, str, res[j][k])
+				}
 			}
 		}
 	}
