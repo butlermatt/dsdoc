@@ -187,3 +187,86 @@ func TestParser_Parse(t *testing.T) {
 		}
 	}
 }
+
+type testStruct struct {
+	n string
+	s []string
+	d *Document
+}
+
+func TestParser_Build(t *testing.T) {
+	var tests = []testStruct{
+		{
+			n: "Test",
+			s: []string{
+				`@Node Test`,
+				`@Is testNode`,
+				`@Parent root`,
+				``,
+				`Short test`,
+			},
+			d: &Document{
+				Name:       "Test",
+				Is:         "testNode",
+				ParentName: "root",
+				Short:      "Short test",
+			},
+		},
+		{
+			n: "Test2",
+			s: []string{
+				`@Node Test2`,
+				`@Is test2Node`,
+				`@Parent root`,
+				``,
+				`Short test 2nd`,
+			},
+			d: &Document{
+				Name:       "Test2",
+				Is:         "test2Node",
+				ParentName: "root",
+				Short:      "Short test 2nd",
+			},
+		},
+	}
+
+	p := NewParser()
+	for i, tt := range tests {
+		err := p.Parse(tt.s)
+		if err != nil {
+			t.Errorf("%d. Unexpected error parsing: %q", i, err)
+		}
+	}
+
+	docs, err := p.Build()
+	if err != nil {
+		t.Errorf("Unexpected build error %q", err)
+	}
+
+	i := 0
+	d := docs.Children[i]
+	for d != nil {
+		tt := getTest(tests, d.Name)
+		if tt.Name != d.Name {
+			t.Errorf("Name %q does not match %q", tt.Name, d.Name)
+		}
+		if tt.ParentName != d.Parent.Name {
+			t.Errorf("Parent Name %q does not match %q", tt.ParentName, d.Parent.Name)
+		}
+		i++
+		if i >= len(docs.Children) {
+			d = nil
+		} else {
+			d = docs.Children[i]
+		}
+	}
+}
+
+func getTest(tests []testStruct, name string) *Document {
+	for _, tt := range tests {
+		if tt.n == name {
+			return tt.d
+		}
+	}
+	return nil
+}
