@@ -12,7 +12,7 @@ func TestParser_Parse(t *testing.T) {
 	}{
 		{
 			s: []string{
-				`@Command Add_Device`,
+				`@Action Add_Device`,
 				`@Is addDevice`,
 				`@Parent root`,
 				``,

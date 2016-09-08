@@ -20,8 +20,8 @@ const (
 	Text
 	// Attr indicates an DsDoc Attribute character
 	Attr // @
-	// Command is a DsDoc attribute keyword.
-	Command
+	// Action is a DsDoc attribute keyword.
+	Action
 	// Node is a DsDoc attribute keyword.
 	Node
 	// Link is a DsDoc attribute keyword.

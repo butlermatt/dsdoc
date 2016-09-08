@@ -45,7 +45,7 @@ type Document struct {
 	ValueType  string
 }
 
-// Parameter is a component of a command type. Used as either a command
+// Parameter is a component of a Action type. Used as either a action
 // parameter or return column.
 type Parameter struct {
 	Name        string
@@ -89,10 +89,10 @@ func (p *Parser) Parse(in []string) error {
 		return fmt.Errorf("found %q, expected %q", lit, AttrChar)
 	}
 
-	// Expect DsDoc to start with either @Command, @Node or @Link
+	// Expect DsDoc to start with either @Action, @Node or @Link
 	tok, lit := p.scan()
 	switch tok {
-	case Command:
+	case Action:
 		doc.Type = ActionDoc
 	case Node:
 		doc.Type = NodeDoc

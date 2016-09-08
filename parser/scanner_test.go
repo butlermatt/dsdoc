@@ -15,7 +15,7 @@ func TestScanner_Scan(t *testing.T) {
 		{s: []string{`  `}, tok: WS, lit: "  "},
 		{s: []string{`.`}, tok: Illegal, lit: "."},
 		{s: []string{`@`}, tok: Attr, lit: "@"},
-		{s: []string{`Command`}, tok: Command, lit: "Command"},
+		{s: []string{`Action`}, tok: Action, lit: "Action"},
 		{s: []string{`Node`}, tok: Node, lit: "Node"},
 		{s: []string{`MetaType`}, tok: MetaType, lit: "MetaType"},
 		{s: []string{`Is`}, tok: Is, lit: "Is"},

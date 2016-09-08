@@ -143,8 +143,8 @@ func (s *Scanner) scanIdent() (ItemToken, string) {
 	}
 
 	switch buf.String() {
-	case "Command":
-		return Command, buf.String()
+	case "Action":
+		return Action, buf.String()
 	case "Node":
 		return Node, buf.String()
 	case "Link":
