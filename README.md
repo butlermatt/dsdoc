@@ -248,6 +248,10 @@ The following are several examples illustrating a fictional link.
 
 The above examples will output the following in api.md:
 
+---
+
+---
+
 ### root  
 
 Type: Node   
