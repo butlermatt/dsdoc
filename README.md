@@ -5,7 +5,8 @@ directory, and any sub-directories and parse source files for any DsDoc comments
 
 *The tool will ignore any hidden directories, and will not traverse symlinks.*
 
-The DsDoc tool currently supports Dart, Java, C, and C++ source files for parsing.
+The DsDoc tool currently supports Dart, Java, C, C++, JavaScript, TypeScript,
+and ES6 (.es) source files for parsing.
 
 Once the source files have been parsed it will build a document tree of the
 various nodes and actions which comprise the link and output the documentation

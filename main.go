@@ -1,19 +1,20 @@
 package main
 
 import (
+	"bytes"
+	"flag"
 	"fmt"
-	"github.com/butlermatt/dsdoc/parser"
-	"github.com/butlermatt/dsdoc/trim"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
-	"flag"
-	"bytes"
+
+	"github.com/butlermatt/dsdoc/parser"
+	"github.com/butlermatt/dsdoc/trim"
 )
 
 const (
-	md = "md" // Markdown
+	md = "md"   // Markdown
 	tx = "text" //text
 )
 
@@ -24,6 +25,9 @@ var ValidFiles = [...]string{
 	".c",
 	".cpp",
 	".cc",
+	".js",
+	".ts",
+	".es",
 }
 
 var psr *parser.Parser
