@@ -22,7 +22,7 @@ func walkTextDoc(doc *parser.Document, sep string) {
 		buf.WriteString(fmt.Sprintln("Is:", doc.Is))
 	}
 	if doc.ParentName != "" {
-		buf.WriteString(fmt.Sprintln("Parent:", doc.ParentName))
+		buf.WriteString(fmt.Sprintln("Parent:", doc.Parent.Name))
 	}
 	buf.WriteString(fmt.Sprint("\nShort: ", doc.Short, "\n\n"))
 	if doc.Long != "" {
@@ -81,7 +81,7 @@ func walkMdDoc(doc *parser.Document, sep string) {
 		buf.WriteString(fmt.Sprintln("Is:", doc.Is, "  "))
 	}
 	if doc.ParentName != "" {
-		buf.WriteString(fmt.Sprintf("Parent: [%s](#%[1]s)  \n", doc.ParentName))
+		buf.WriteString(fmt.Sprintf("Parent: [%s](#%[1]s)  \n", doc.Parent.Name))
 	}
 	buf.WriteString(fmt.Sprint("\nShort: ", doc.Short, "  \n\n"))
 	if doc.Long != "" {
