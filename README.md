@@ -111,8 +111,10 @@ specific `$is` attribute, as are used with Profiles, specify the case-sensitive
 
 This attribute is required by all DsDocs (both Node and Action types). The value
 should be the name or `MetaType` of the parent of this node or action. If the
-node or action is on the root of the link, then you should use the special
-value `root`.
+parent has a path which is duplicated by another node in the link (eg, two nodes
+implement a `description` path) then you should use the parent's MetaType here.
+If the node or action is on the root of the link, then you should use the 
+special value `root`.
 
 ### `Short Description`
 
