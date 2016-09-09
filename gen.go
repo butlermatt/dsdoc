@@ -94,7 +94,7 @@ func walkMdDoc(doc *parser.Document, sep string) {
 			buf.WriteString("Name | Type | Description\n")
 			buf.WriteString("--- | --- | ---\n")
 			for _, p := range doc.Params {
-				buf.WriteString(fmt.Sprintf("%s | %s | %s\n", p.Name, p.Type, p.Description))
+				buf.WriteString(fmt.Sprintf("%s | `%s` | %s\n", p.Name, p.Type, p.Description))
 			}
 			buf.WriteString("\n")
 		}
@@ -105,13 +105,13 @@ func walkMdDoc(doc *parser.Document, sep string) {
 			buf.WriteString("Name | Type | Description\n")
 			buf.WriteString("--- | --- | ---\n")
 			for _, p := range doc.Columns {
-				buf.WriteString(fmt.Sprintf("%s | %s | %s \n", p.Name, p.Type, p.Description))
+				buf.WriteString(fmt.Sprintf("%s | `%s` | %s \n", p.Name, p.Type, p.Description))
 			}
 		}
 	}
 
 	if doc.ValueType != "" {
-		buf.WriteString(fmt.Sprintln("Value Type:", doc.ValueType))
+		buf.WriteString(fmt.Sprintf("Value Type: `%s`\n", doc.ValueType))
 	}
 	buf.WriteString("\n---\n\n")
 

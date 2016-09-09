@@ -218,6 +218,18 @@ func (p *Parser) scanIgnoreWs() (ItemToken, string) {
 	return tok, lit
 }
 
+func (p *Parser) scanTypeIgnoreWs() (ItemToken, string) {
+	if p.buf.b && p.buf.tok == TypeIdent {
+		p.buf.b = false
+		return p.buf.tok, p.buf.lit
+	}
+
+	tok, lit := p.s.scanTypeIdent()
+	p.buf.tok, p.buf.lit = tok, lit
+
+	return tok, lit
+}
+
 func (p *Parser) scanText() (ItemToken, string) {
 	if p.buf.b && p.buf.tok == Text {
 		p.buf.b = false
@@ -268,8 +280,8 @@ func (p *Parser) scanParam(d *Document) error {
 	}
 	param.Name = lit
 
-	tok, lit = p.scanIgnoreWs()
-	if tok != Ident {
+	tok, lit = p.scanTypeIgnoreWs()
+	if tok != TypeIdent {
 		return fmt.Errorf("Expected Ident, found %q (%q)", lit, tok)
 	}
 	param.Type = lit // TODO: Check types in the future.
@@ -301,8 +313,8 @@ func (p *Parser) scanColumn(d *Document) error {
 	}
 	param.Name = lit
 
-	tok, lit = p.scanIgnoreWs()
-	if tok != Ident {
+	tok, lit = p.scanTypeIgnoreWs()
+	if tok != TypeIdent {
 		return fmt.Errorf("Expected Ident, found %q (%q)", lit, tok)
 	}
 	param.Type = lit // TODO: Check types in the future.
@@ -318,8 +330,8 @@ func (p *Parser) scanColumn(d *Document) error {
 }
 
 func (p *Parser) scanValue(d *Document) error {
-	tok, lit := p.scanIgnoreWs()
-	if tok != Ident {
+	tok, lit := p.scanTypeIgnoreWs()
+	if tok != TypeIdent {
 		return fmt.Errorf("Expected Ident, found %q (%q)", lit, tok)
 	}
 	d.ValueType = lit

@@ -16,6 +16,8 @@ const (
 	WS
 	// Ident indicates an identifier token, such as fields, Path_name
 	Ident
+	// TypeIdent indicates a type specific identifier token and is less restrictive
+	TypeIdent
 	// Text indicates a text string such as in short/long description
 	Text
 	// Attr indicates an DsDoc Attribute character
@@ -55,6 +57,8 @@ func (i ItemToken) String() string {
 		t = "Whitespace"
 	case Ident:
 		t = "Ident"
+	case TypeIdent:
+		t = "TypeIdent"
 	case Text:
 		t = "Text"
 	case Attr:

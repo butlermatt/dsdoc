@@ -125,6 +125,48 @@ func (s *Scanner) scanWhitespace() (ItemToken, string) {
 	return WS, buf.String()
 }
 
+// scanTypeIdent consumes all contiguous type ident runes. This may include
+// square brackets and anything contained within them.
+func (s *Scanner) scanTypeIdent() (ItemToken, string) {
+	var buf bytes.Buffer
+
+	// Trim leading whitespace
+	r := s.read()
+	for ; isWs(r); r = s.read() {
+	}
+
+	buf.WriteRune(r)
+
+	var brack bool
+	for {
+		if r := s.read(); isAlphaNum(r) || r == '_' {
+			buf.WriteRune(r)
+		} else if !brack {
+			if r == '[' {
+				brack = true
+				buf.WriteRune(r)
+			} else {
+				s.unread()
+				break
+			}
+		} else {
+			if r == ']' {
+				buf.WriteRune(r)
+				break
+			} else if r == eol || r == eof {
+				s.unread()
+				return Illegal, "Missing closing bracket ']'"
+			} else if r == '[' {
+				s.unread()
+				return Illegal, "Cannot nest brackets"
+			} else {
+				buf.WriteRune(r)
+			}
+		}
+	}
+	return TypeIdent, buf.String()
+}
+
 // scanIdent consumes all contiguous ident runes.
 func (s *Scanner) scanIdent() (ItemToken, string) {
 	var buf bytes.Buffer
