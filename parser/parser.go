@@ -32,7 +32,9 @@ func (d DocType) String() string {
 // Document is the primary container of the DsDoc.
 type Document struct {
 	Type       DocType
+	Path       string
 	Name       string
+	MetaName   string
 	Is         string
 	ParentName string
 	Parent     *Document
@@ -103,7 +105,9 @@ func (p *Parser) Parse(in []string) error {
 	}
 
 	if tok, lit = p.scanIgnoreWs(); tok == Ident {
+		doc.Path = lit
 		doc.Name = lit
+		doc.MetaName = lit
 	} else if tok == EOF {
 		return errors.New("DsDoc unexpectedly terminated early.")
 	} else if tok != EOL {
@@ -159,9 +163,9 @@ func (p *Parser) Parse(in []string) error {
 	if doc.Name == "" {
 		return errors.New("DsDoc missing required Name or MetaType field")
 	}
-	ed := p.c[doc.Name]
+	ed := p.c[doc.MetaName]
 	if ed != nil {
-		return fmt.Errorf("DsDoc with name %q already exists", doc.Name)
+		return fmt.Errorf("DsDoc with meta name %q already exists", doc.MetaName)
 	}
 
 	if doc.ParentName == "" {
@@ -174,7 +178,7 @@ func (p *Parser) Parse(in []string) error {
 		pd.Children = append(pd.Children, doc)
 	}
 
-	p.c[doc.Name] = doc
+	p.c[doc.MetaName] = doc
 	return nil
 }
 
@@ -256,10 +260,10 @@ func (p *Parser) scanMetaType(d *Document) error {
 	if tok != Ident {
 		return fmt.Errorf("Expected Ident, found %q (%q)", lit, tok)
 	}
-	if d.Name != "" {
-		return fmt.Errorf("Cannot define a name %q MetaType %q", d.Name, lit)
+	if d.Name == "" {
+		d.Name = lit
 	}
-	d.Name = lit
+	d.MetaName = lit
 	return nil
 }
 

@@ -95,11 +95,10 @@ types.
 ### `@MetaType [type]`
 
 If a Node or Action does not have a fixed name, such as may be the case if a
-node receives a name from either user input or via an external API call, then
-the DsDoc must include an `@MetaType` annotation which represents an internal
-type for the link. The `type` argument is required in this case.  
-It is an error to define both a name and MetaType.  
-`type` cannot contain spaces.
+node receives a name from either user input or via an external API call, or if
+the path is duplicated amoung other nodes then the DsDoc must include a unique 
+`@MetaType` annotation which represents an internal type for the link.  
+The `type` argument is required and cannot contain spaces.
 
 ### `@Is [isType]`
 
