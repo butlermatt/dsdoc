@@ -115,7 +115,7 @@ func walkFn(path string, info os.FileInfo, err error) error {
 	}
 
 	for _, bt := range batches {
-		err = psr.Parse(bt)
+		err = psr.Parse(bt, info.Name())
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}

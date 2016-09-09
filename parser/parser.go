@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -45,6 +44,7 @@ type Document struct {
 	Return     string
 	Columns    []*Parameter
 	ValueType  string
+	fn         string
 }
 
 // Parameter is a component of a Action type. Used as either a action
@@ -81,10 +81,10 @@ func NewParser() *Parser {
 }
 
 // Parse will take the input string slice and try to parse the information.
-func (p *Parser) Parse(in []string) error {
+func (p *Parser) Parse(in []string, filename string) error {
 	p.s = NewScanner(in)
 	p.buf.b = false
-	doc := &Document{}
+	doc := &Document{fn: filename}
 
 	// First token should be an Attribute character.
 	if tok, lit := p.scan(); tok != Attr {
@@ -109,7 +109,7 @@ func (p *Parser) Parse(in []string) error {
 		doc.Name = lit
 		doc.MetaName = lit
 	} else if tok == EOF {
-		return errors.New("DsDoc unexpectedly terminated early.")
+		return fmt.Errorf("DsDoc unexpectedly terminated early. File: %s", doc.fn)
 	} else if tok != EOL {
 		return fmt.Errorf("Expected ident string or EOL, found %q", lit)
 	}
@@ -151,6 +151,8 @@ func (p *Parser) Parse(in []string) error {
 				err = p.scanColumn(doc)
 			case Value:
 				err = p.scanValue(doc)
+			default:
+				err = fmt.Errorf("Unknown attribute: %q. File: %s", lit, doc.fn)
 			}
 
 			if err != nil {
@@ -161,15 +163,15 @@ func (p *Parser) Parse(in []string) error {
 
 	// TODO: Verify required values are set
 	if doc.Name == "" {
-		return errors.New("DsDoc missing required Name or MetaType field")
+		return fmt.Errorf("DsDoc missing required Name or MetaType field. File: %s", doc.fn)
 	}
 	ed := p.c[doc.MetaName]
 	if ed != nil {
-		return fmt.Errorf("DsDoc with meta name %q already exists", doc.MetaName)
+		return fmt.Errorf("DsDoc with meta name %q already exists. File: %s", doc.MetaName, doc.fn)
 	}
 
 	if doc.ParentName == "" {
-		return errors.New("DsDoc missing required Parent field")
+		return fmt.Errorf("DsDoc missing required Parent field. File: %s", doc.fn)
 	}
 
 	pd := p.c[doc.ParentName]
@@ -191,7 +193,7 @@ func (p *Parser) Build() (*Document, error) {
 		if doc.Parent == nil {
 			pd, ok := p.c[doc.ParentName]
 			if !ok {
-				return nil, fmt.Errorf("Unable to locate Parent named %q referenced by %q", doc.ParentName, key)
+				return nil, fmt.Errorf("Unable to locate Parent named %q referenced by %q. File: %s", doc.ParentName, key, doc.fn)
 			}
 			doc.Parent = pd
 			pd.Children = append(pd.Children, doc)
@@ -248,7 +250,7 @@ func (p *Parser) scanText() (ItemToken, string) {
 func (p *Parser) scanIs(d *Document) error {
 	tok, lit := p.scanIgnoreWs()
 	if tok != Ident {
-		return fmt.Errorf("Expected Ident, found %q (%q)", lit, tok)
+		return fmt.Errorf("Expected Ident, found %q (%q). File: %s", lit, tok, d.fn)
 	}
 	d.Is = lit
 
@@ -258,7 +260,7 @@ func (p *Parser) scanIs(d *Document) error {
 func (p *Parser) scanMetaType(d *Document) error {
 	tok, lit := p.scanIgnoreWs()
 	if tok != Ident {
-		return fmt.Errorf("Expected Ident, found %q (%q)", lit, tok)
+		return fmt.Errorf("Expected Ident, found %q (%q). File: %s", lit, tok, d.fn)
 	}
 	if d.Name == "" {
 		d.Name = lit
@@ -270,7 +272,7 @@ func (p *Parser) scanMetaType(d *Document) error {
 func (p *Parser) scanParent(d *Document) error {
 	tok, lit := p.scanIgnoreWs()
 	if tok != Ident {
-		return fmt.Errorf("Expected Ident, found %q (%q)", lit, tok)
+		return fmt.Errorf("Expected Ident, found %q (%q). File: %s", lit, tok, d.fn)
 	}
 	d.ParentName = lit
 	return nil
@@ -280,19 +282,19 @@ func (p *Parser) scanParam(d *Document) error {
 	param := &Parameter{}
 	tok, lit := p.scanIgnoreWs()
 	if tok != Ident {
-		return fmt.Errorf("Expected Ident, found %q (%q)", lit, tok)
+		return fmt.Errorf("Expected Ident, found %q (%q). File: %s", lit, tok, d.fn)
 	}
 	param.Name = lit
 
 	tok, lit = p.scanTypeIgnoreWs()
 	if tok != TypeIdent {
-		return fmt.Errorf("Expected Ident, found %q (%q)", lit, tok)
+		return fmt.Errorf("Expected Ident, found %q (%q). File: %s", lit, tok, d.fn)
 	}
 	param.Type = lit // TODO: Check types in the future.
 
 	tok, lit = p.scanText()
 	if tok != Text {
-		return fmt.Errorf("Expected Text, found %q (%q)", lit, tok)
+		return fmt.Errorf("Expected Text, found %q (%q). File: %s", lit, tok, d.fn)
 	}
 	param.Description = lit
 	d.Params = append(d.Params, param)
@@ -303,7 +305,7 @@ func (p *Parser) scanParam(d *Document) error {
 func (p *Parser) scanReturn(d *Document) error {
 	tok, lit := p.scanIgnoreWs()
 	if tok != Ident {
-		return fmt.Errorf("Expected Ident, found %q (%q)", lit, tok)
+		return fmt.Errorf("Expected Ident, found %q (%q). File: %s", lit, tok, d.fn)
 	}
 	d.Return = lit
 	return nil
@@ -313,19 +315,19 @@ func (p *Parser) scanColumn(d *Document) error {
 	param := &Parameter{}
 	tok, lit := p.scanIgnoreWs()
 	if tok != Ident {
-		return fmt.Errorf("Expected Ident, found %q (%q)", lit, tok)
+		return fmt.Errorf("Expected Ident, found %q (%q). File: %s", lit, tok, d.fn)
 	}
 	param.Name = lit
 
 	tok, lit = p.scanTypeIgnoreWs()
 	if tok != TypeIdent {
-		return fmt.Errorf("Expected Ident, found %q (%q)", lit, tok)
+		return fmt.Errorf("Expected Ident, found %q (%q). File: %s", lit, tok, d.fn)
 	}
 	param.Type = lit // TODO: Check types in the future.
 
 	tok, lit = p.scanText()
 	if tok != Text {
-		return fmt.Errorf("Expected Text, found %q (%q)", lit, tok)
+		return fmt.Errorf("Expected Text, found %q (%q). File: %s", lit, tok, d.fn)
 	}
 	param.Description = lit
 	d.Columns = append(d.Columns, param)
@@ -336,7 +338,7 @@ func (p *Parser) scanColumn(d *Document) error {
 func (p *Parser) scanValue(d *Document) error {
 	tok, lit := p.scanTypeIgnoreWs()
 	if tok != TypeIdent {
-		return fmt.Errorf("Expected Ident, found %q (%q)", lit, tok)
+		return fmt.Errorf("Expected Ident, found %q (%q). File: %s", lit, tok, d.fn)
 	}
 	d.ValueType = lit
 	return nil
