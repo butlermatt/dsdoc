@@ -246,7 +246,7 @@ The following are several examples illustrating a fictional link.
 //*
 //* String which holds the release date of the current version.
 //*
-//* @Value string
+//* @Value string write
 ```
 
 ## Output
@@ -257,112 +257,112 @@ The above examples will output the following in api.md:
 
 ---
 
+```
+- root
+ |- @Add_Device
+ |- DeviceNode
+ | |- @Remove_Device
+ | |- version
+ | | |- versionNumber
+ | | |- releaseDate
+```
+
+---
+
 ### root  
 
+Root node of the DsLink  
+
 Type: Node   
-
-Short: Root node of the DsLink  
-
 
 ---
 
 ### Add_Device  
 
+Adds a device to the link.  
+
 Type: Action   
-Is: addDeviceCmd   
+$is: addDeviceCmd   
 Parent: [root](#root)  
 
-Short: Adds a device to the link.  
-
-Long: Add Device accepts the URL and name of the device to add to the link. It will verify the URL is accessible and return an error message if it fails.  
+Description:  
+Add Device accepts the URL and name of the device to add to the link. It will verify the URL is accessible and return an error message if it fails.  
 
 Params:  
 
 Name | Type | Description
 --- | --- | ---
-url | string | The URL of the device.
-name | string | The name for the device, it will be added to the link under this name.
+url | `string` | The URL of the device.
+name | `string` | The name for the device, it will be added to the link under this name.
 
 Return type: value   
 Columns:  
 
 Name | Type | Description
 --- | --- | ---
-success | bool | A boolean which represents if the action succeeded or not. Returns false on failure and true on success.
-message | string | If the action succeeds, this will be "Success!", on failure, it will return the error message.
+success | `bool` | A boolean which represents if the action succeeded or not. Returns false on failure and true on success. 
+message | `string` | If the action succeeds, this will be "Success!", on failure, it will return the error message. 
 
 ---
 
 ### DeviceNode  
 
+A device which has been added to the link.  
+
 Type: Node   
-Is: deviceNode   
+$is: deviceNode   
 Parent: [root](#root)  
 
-Short: A device which has been added to the link.  
-
-Long: When added to the link, a device will appear as the name provided. This node maintains the connection with the remote host.  
+Description:  
+When added to the link, a device will appear as the name provided. This node maintains the connection with the remote host.  
 
 
 ---
 
 ### Remove_Device  
 
+Removes a device from the link.  
+
 Type: Action   
-Is: removeDeviceCmd   
-Parent: [DeviceNode](#DeviceNode)  
-
-Short: Removes a device from the link.  
-
+$is: removeDeviceCmd   
+Parent: [DeviceNode](#devicenode)  
 Return type: value   
 Columns:  
 
 Name | Type | Description
 --- | --- | ---
-success | bool | A boolean which represents if the action succeeded or not. Returns false on failure and true on success.
-message | string | If the action succeeds, this will be "Success!", on failure, it will return the error message.
+success | `bool` | A boolean which represents if the action succeeded or not. Returns false on failure and true on success. 
+message | `string` | If the action succeeds, this will be "Success!", on failure, it will return the error message. 
 
 ---
 
 ### version  
 
+A hierarchy node which holds version value nodes.  
+
 Type: Node   
-Parent: [DeviceNode](#DeviceNode)  
-
-Short: A hierarchy node which holds version value nodes.  
-
+Parent: [DeviceNode](#devicenode)  
 
 ---
 
 ### versionNumber  
 
+String which holds the full version number.  
+
 Type: Node   
 Parent: [version](#version)  
-
-Short: String which holds the full version number.  
-
-Value Type: string
+Value Type: `string`  
+Writable: `never`  
 
 ---
 
 ### releaseDate  
 
+String which holds the release date of the current version.  
+
 Type: Node   
 Parent: [version](#version)  
-
-Short: String which holds the release date of the current version.  
-
-Value Type: string
+Value Type: `string`  
+Writable: `write`  
 
 ---
-
-```
-- root
- |- Add_Device
- |- DeviceNode
- | |- Remove_Device
- | |- version
- | | |- versionNumber
- | | |- releaseDate
-
-```
