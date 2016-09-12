@@ -12,22 +12,23 @@ var tree bytes.Buffer
 
 func genText(doc *parser.Document) bytes.Buffer {
 	walkTextDoc(doc, "")
-	buf.WriteString(tree.String())
-	return buf
+	tree.WriteString("\n---\n\n")
+	tree.WriteString(buf.String())
+	return tree
 }
 
 func walkTextDoc(doc *parser.Document, sep string) {
 	buf.WriteString(fmt.Sprintln("Name:", doc.Name))
+	buf.WriteString(fmt.Sprint("\n", doc.Short, "\n\n"))
 	buf.WriteString(fmt.Sprintln("Type:", doc.Type))
 	if doc.Is != "" {
-		buf.WriteString(fmt.Sprintln("Is:", doc.Is))
+		buf.WriteString(fmt.Sprintln("$is:", doc.Is))
 	}
 	if doc.ParentName != "" {
 		buf.WriteString(fmt.Sprintln("Parent:", doc.Parent.Name))
 	}
-	buf.WriteString(fmt.Sprint("\nShort: ", doc.Short, "\n\n"))
 	if doc.Long != "" {
-		buf.WriteString(fmt.Sprint("Long: ", doc.Long, "\n\n"))
+		buf.WriteString(fmt.Sprint("Description:\n", doc.Long, "\n\n"))
 	}
 
 	if doc.Type == parser.ActionDoc {
@@ -60,7 +61,17 @@ func walkTextDoc(doc *parser.Document, sep string) {
 	}
 	buf.WriteString("\n---\n\n")
 
-	tree.WriteString(fmt.Sprintf("%s- %s\n", sep, doc.Name))
+	if (doc.Type == parser.ActionDoc) {
+		var args string
+		var params []string
+		for _, a := range doc.Params {
+			params = append(params, a.Name)
+		}
+		args = strings.Join(params, ", ")
+		tree.WriteString(fmt.Sprintf("%s- @%s(%s)\n", sep, doc.Name, args))
+	} else {
+		tree.WriteString(fmt.Sprintf("%s- %s\n", sep, doc.Name))
+	}
 	if len(doc.Children) > 0 {
 		for _, ch := range doc.Children {
 			walkTextDoc(ch, sep+" |")
@@ -72,7 +83,6 @@ func genMarkdown(doc *parser.Document) bytes.Buffer {
 	tree.WriteString("```\n")
 	walkMdDoc(doc, "")
 	tree.WriteString("```\n\n---\n\n")
-	//buf.WriteString(tree.String())
 	tree.WriteString(buf.String())
 	return tree
 }
@@ -119,11 +129,17 @@ func walkMdDoc(doc *parser.Document, sep string) {
 	}
 	buf.WriteString("\n---\n\n")
 
-	var prepend string
 	if (doc.Type == parser.ActionDoc) {
-		prepend = "@"
+		var args string
+		var params []string
+		for _, a := range doc.Params {
+			params = append(params, a.Name)
+		}
+		args = strings.Join(params, ", ")
+		tree.WriteString(fmt.Sprintf("%s- @%s(%s)\n", sep, doc.Name, args))
+	} else {
+		tree.WriteString(fmt.Sprintf("%s- %s\n", sep, doc.Name))
 	}
-	tree.WriteString(fmt.Sprintf("%s- %s%s\n", sep, prepend, doc.Name))
 	if len(doc.Children) > 0 {
 		for _, ch := range doc.Children {
 			walkMdDoc(ch, sep+" |")

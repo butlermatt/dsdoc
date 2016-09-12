@@ -259,9 +259,9 @@ The above examples will output the following in api.md:
 
 ```
 - root
- |- @Add_Device
+ |- @Add_Device(url, name)
  |- DeviceNode
- | |- @Remove_Device
+ | |- @Remove_Device()
  | |- version
  | | |- versionNumber
  | | |- releaseDate
