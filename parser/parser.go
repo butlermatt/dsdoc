@@ -28,6 +28,28 @@ func (d DocType) String() string {
 	return ""
 }
 
+// WriteType represents if the value is writable.
+type WriteType int
+
+const (
+	// Never indicates the value is not writable.
+	Never WriteType = iota
+	// Write indicates the value is writable with write privileges.
+	Write
+	// Config indicates the value is writable with config privileges.
+	Config
+)
+
+func (w WriteType) String() string {
+	switch w {
+	case Write:
+		return "write"
+	case Config:
+		return "config"
+	}
+	return "never"
+}
+
 // Document is the primary container of the DsDoc.
 type Document struct {
 	Type       DocType
@@ -44,6 +66,7 @@ type Document struct {
 	Return     string
 	Columns    []*Parameter
 	ValueType  string
+	Writable   WriteType
 	fn         string
 }
 
@@ -341,6 +364,16 @@ func (p *Parser) scanValue(d *Document) error {
 		return fmt.Errorf("Expected Ident, found %q (%q). File: %s", lit, tok, d.fn)
 	}
 	d.ValueType = lit
+
+	tok, lit = p.scanIgnoreWs()
+	if tok == Ident {
+		if lit == "write" {
+			d.Writable = Write
+		} else if lit == "config" {
+			d.Writable = Config
+		}
+	}
+
 	return nil
 }
 

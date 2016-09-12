@@ -162,13 +162,16 @@ string.
 `Description` is a long description of what the column represents, and may span
 multiple lines.
 
-### `@Value [type]`
+### `@Value [type] [write|config]`
 
 The `@Value` annotation is optional for Node DsDocs. It is not valid for Action
 DsDocs. A value should be specified if this node has a readable or writable
 value.  
 `type` must be specified if the annotation is provided. It should represent the
-DSA type of the value including num, bool, and string.
+DSA type of the value including num, bool, and string.  
+The writable permission level may follow the value type. If specified, the value
+must be either `write` or `config` to represent those types required permissions.
+If omitted, then it will default to `never`.  
 
 ## Examples
 

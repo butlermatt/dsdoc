@@ -55,7 +55,8 @@ func walkTextDoc(doc *parser.Document, sep string) {
 	}
 
 	if doc.ValueType != "" {
-		buf.WriteString(fmt.Sprintln("Value Type:", doc.ValueType))
+		buf.WriteString(fmt.Sprintln("Value Type:", doc.ValueType, "  "))
+		buf.WriteString(fmt.Sprintln("Writable:", doc.Writable, "  "))
 	}
 	buf.WriteString("\n---\n\n")
 
@@ -113,7 +114,8 @@ func walkMdDoc(doc *parser.Document, sep string) {
 	}
 
 	if doc.ValueType != "" {
-		buf.WriteString(fmt.Sprintf("Value Type: `%s`\n", doc.ValueType))
+		buf.WriteString(fmt.Sprintf("Value Type: `%s`  \n", doc.ValueType))
+		buf.WriteString(fmt.Sprintf("Writable: `%s`  \n", doc.Writable))
 	}
 	buf.WriteString("\n---\n\n")
 
