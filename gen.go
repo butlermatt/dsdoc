@@ -70,7 +70,11 @@ func walkTextDoc(doc *parser.Document, sep string) {
 		args = strings.Join(params, ", ")
 		tree.WriteString(fmt.Sprintf("%s- @%s(%s)\n", sep, doc.Name, args))
 	} else {
-		tree.WriteString(fmt.Sprintf("%s- %s\n", sep, doc.Name))
+		var vType string
+		if doc.ValueType != "" {
+			vType = fmt.Sprintf(" *%s (%s)*", doc.ValueType, doc.Writable)
+		}
+		tree.WriteString(fmt.Sprintf("%s- %s%s\n", sep, doc.Name, vType))
 	}
 	if len(doc.Children) > 0 {
 		for _, ch := range doc.Children {
@@ -80,9 +84,9 @@ func walkTextDoc(doc *parser.Document, sep string) {
 }
 
 func genMarkdown(doc *parser.Document) bytes.Buffer {
-	tree.WriteString("```\n")
+	tree.WriteString(" <pre>\n")
 	walkMdDoc(doc, "")
-	tree.WriteString("```\n\n---\n\n")
+	tree.WriteString(" </pre>\n\n---\n\n")
 	tree.WriteString(buf.String())
 	return tree
 }
@@ -136,9 +140,13 @@ func walkMdDoc(doc *parser.Document, sep string) {
 			params = append(params, a.Name)
 		}
 		args = strings.Join(params, ", ")
-		tree.WriteString(fmt.Sprintf("%s- @%s(%s)\n", sep, doc.Name, args))
+		tree.WriteString(fmt.Sprintf("%s-[@%s(%s)](#%s)\n", sep, doc.Name, args, strings.ToLower(doc.Name)))
 	} else {
-		tree.WriteString(fmt.Sprintf("%s- %s\n", sep, doc.Name))
+		var vType string
+		if doc.ValueType != "" {
+			vType = fmt.Sprintf(" - %s", doc.ValueType)
+		}
+		tree.WriteString(fmt.Sprintf("%s-[%s](#%s)%s\n", sep, doc.Name, strings.ToLower(doc.Name), vType))
 	}
 	if len(doc.Children) > 0 {
 		for _, ch := range doc.Children {
