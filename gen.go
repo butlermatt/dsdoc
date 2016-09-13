@@ -5,10 +5,16 @@ import (
 	"fmt"
 	"github.com/butlermatt/dsdoc/parser"
 	"strings"
+	"sort"
 )
 
 var buf bytes.Buffer
 var tree bytes.Buffer
+
+type ByAction []*parser.Document
+func (a ByAction) Len() int { return len(a) }
+func (a ByAction) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a ByAction) Less(i, j int) bool { return a[i].Type == parser.ActionDoc && a[j].Type != parser.ActionDoc }
 
 func genText(doc *parser.Document) bytes.Buffer {
 	walkTextDoc(doc, "")
@@ -77,6 +83,7 @@ func walkTextDoc(doc *parser.Document, sep string) {
 		tree.WriteString(fmt.Sprintf("%s- %s%s\n", sep, doc.Name, vType))
 	}
 	if len(doc.Children) > 0 {
+		sort.Stable(ByAction(doc.Children))
 		for _, ch := range doc.Children {
 			walkTextDoc(ch, sep+" |")
 		}
@@ -149,6 +156,7 @@ func walkMdDoc(doc *parser.Document, sep string) {
 		tree.WriteString(fmt.Sprintf("%s-[%s](#%s)%s\n", sep, doc.Name, strings.ToLower(doc.Name), vType))
 	}
 	if len(doc.Children) > 0 {
+		sort.Stable(ByAction(doc.Children))
 		for _, ch := range doc.Children {
 			walkMdDoc(ch, sep+" |")
 		}
