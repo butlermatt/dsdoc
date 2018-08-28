@@ -6,6 +6,7 @@ import (
 
 // Prefix is the DsDoc comment style.
 const Prefix string = "//*"
+const lenPrefix = len(Prefix)
 
 func TrimDsDoc(s []string) [][]string {
 	var r [][]string
@@ -16,7 +17,7 @@ func TrimDsDoc(s []string) [][]string {
 	for _, str = range s {
 		if j := strings.Index(str, Prefix); j != -1 {
 			found = true
-			b = append(b, strings.TrimSpace(str[(j + len(Prefix)):]))
+			b = append(b, strings.TrimSpace(str[j + lenPrefix:]))
 		} else {
 			if found {
 				tmp := make([]string, len(b))

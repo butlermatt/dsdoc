@@ -97,7 +97,7 @@ func TestParser_Parse(t *testing.T) {
 
 	for i, tt := range tests {
 		parser := NewParser()
-		err := parser.Parse(tt.s)
+		err := parser.Parse(tt.s, "testfile.go")
 		if err != nil {
 			t.Errorf("%d. Unexpected error %q", i, err)
 		}
@@ -232,7 +232,7 @@ func TestParser_Build(t *testing.T) {
 
 	p := NewParser()
 	for i, tt := range tests {
-		err := p.Parse(tt.s)
+		err := p.Parse(tt.s, "testfile.go")
 		if err != nil {
 			t.Errorf("%d. Unexpected error parsing: %q", i, err)
 		}

@@ -32,12 +32,13 @@ var ValidFiles = [...]string{
 
 var psr *parser.Parser
 
-func isSrcFile(ext string) bool {
-	for i := 0; i < len(ValidFiles); i++ {
-		if ext == ValidFiles[i] {
+func isSrcFile(extension string) bool {
+	for _, ext := range ValidFiles {
+		if extension == ext {
 			return true
 		}
 	}
+
 	return false
 }
 
